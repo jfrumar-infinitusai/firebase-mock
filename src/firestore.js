@@ -141,6 +141,10 @@ MockFirestore.prototype.collection = function (path) {
   return this._child(path, false);
 };
 
+MockFirestore.prototype.collectionGroup = function (path) {
+  return this._child(path, false);
+};
+
 MockFirestore.prototype.doc = function (path) {
   return this._child(path, true);
 };
