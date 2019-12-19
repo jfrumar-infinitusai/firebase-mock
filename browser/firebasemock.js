@@ -1,4 +1,4 @@
-/** firebase-mock - v2.3.0
+/** firebase-mock - v2.3.1
 https://github.com/soumak77/firebase-mock
 * Copyright (c) 2016 Brian Soumakian
 * License: MIT */
@@ -53460,8 +53460,8 @@ MockQuery.prototype.endAt = function (priority, key) {
 };
 
 function assertQuery (method, pri, key) {
-  if (pri !== null && typeof(pri) !== 'string' && typeof(pri) !== 'number') {
-    throw new Error(method + ' failed: first argument must be a valid firebase priority (a string, number, or null).');
+  if (pri !== null && typeof(pri) !== 'string' && typeof(pri) !== 'number' && typeof(pri) !== 'boolean') {
+    throw new Error(method + ' failed: first argument must be a valid firebase priority (a string, number, boolean, or null).');
   }
   if (!_.isUndefined(key)) {
     utils.assertKey(method, key, 'second');
@@ -54527,15 +54527,21 @@ exports.priAndKeyComparator = function priAndKeyComparator(testPri, testKey, val
 };
 
 exports.priorityComparator = function priorityComparator(a, b) {
+  // https://firebase.google.com/docs/database/web/lists-of-data#data-order
   if (a !== b) {
     if (a === null || b === null) {
       return a === null ? -1 : 1;
     }
-    if (typeof a !== typeof b) {
-      return typeof a === 'number' ? -1 : 1;
-    } else {
-      return a > b ? 1 : -1;
+    if(typeof a === 'boolean' && typeof b === 'boolean') {
+      return !a ? -1 : 1;
     }
+    if (typeof a !== typeof b) {
+      if(typeof a === 'boolean' || typeof b === 'boolean') {
+        return typeof a === 'boolean' ? -1 : 1;
+      }
+      return typeof a === 'number' ? -1 : 1;
+    }
+    return a > b ? 1 : -1;
   }
   return 0;
 };
